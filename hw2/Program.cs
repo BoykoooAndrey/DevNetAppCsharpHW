@@ -1,5 +1,6 @@
 ﻿
 
+using Npgsql;
 using System.Diagnostics;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -10,19 +11,38 @@ namespace hw2
 	internal class Program
 	{
 
-		static async void PrintAsync(string message)
-		{
-			await Task.Delay(1000);     // имитация продолжительной работы
-			Console.WriteLine(message);
-		}
+		
 
-		static async Task  Main(string[] args) 
+		static void  Main(string[] args) 
 		{
-			PrintAsync("Hello World");
-			PrintAsync("Hello METANIT.COM");
+			Random r = new Random();
+            for (int i = 0; i < 100; i++)
+            {
+				Console.WriteLine(r.Next(1, 3));
+                
+            }
 
-			Console.WriteLine("Main End");
-			await Task.Delay(3000); // ждем завершения задач
+
+            string connectionString = "Host=localhost;Username=postgres;Password=example;Database=Test";
+			using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "SELECT users.id, users.name, messages.message FROM users JOIN messages ON users.id = messages.user_id";
+
+				using (NpgsqlCommand command = new NpgsqlCommand(query, connection))
+				{
+					using (NpgsqlDataReader reader = command.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							int userId = reader.GetInt32(0);
+							string userName = reader.GetString(1);
+							string message = reader.GetString(2);
+                            Console.WriteLine($"User ID: {userId}, User Name: {userName}, Message: {message}");
+                        }
+					}
+				}
+			}
 
 
 		}

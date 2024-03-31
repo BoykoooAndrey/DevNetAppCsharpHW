@@ -11,17 +11,19 @@ namespace Client
 {
     internal class Message
     {
-        public string UserName { get; set; }
+        public string FromName { get; set; }
+        public string ToName { get; set; }
         public string Text { get; set; }
 
         public DateTime DateTime { get; set; }
-        public Message(string u, string text)
-        {
-            UserName = u;
-            Text = text;
-            DateTime = DateTime.Now;
-        }
-        public Message() { }
+		public Message(string fromName, string toName, string text)
+		{
+			this.FromName = fromName;
+			this.ToName = toName;
+			this.Text = text;
+			this.DateTime = DateTime.Now;
+		}
+		public Message() { }
 
         public string toJson()
         {
@@ -34,7 +36,7 @@ namespace Client
         }
         public override string ToString()
         {
-            return String.Format($"{this.DateTime.ToString()} - {this.UserName}:{this.Text}");
+            return String.Format($"{this.DateTime.ToString()} - {this.FromName}:{this.Text}");
         }
     }
 }

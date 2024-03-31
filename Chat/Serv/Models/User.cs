@@ -12,6 +12,7 @@ namespace Serv.Models
         public string Name { get; set; }
         public virtual ICollection<Message> ToMessages { get; set; }
         public virtual ICollection<Message> FromMessages { get; set; }
+        public virtual ICollection<Message> UnreadMessages { get; set; }
     
     
     }

@@ -10,23 +10,54 @@ namespace Client
 {
     internal class Client
     {
-        public static async Task SendMsg(string name)
-        {
-            IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 16874);
-            UdpClient udpClient = new UdpClient();
-            Console.Write("Введите соощение:");
-            string text = Console.ReadLine();
-            Message msg = new Message(name, text);
-            string responseMsgJs = msg.toJson();
-            byte[] responseData = Encoding.UTF8.GetBytes(responseMsgJs);
-            await udpClient.SendAsync(responseData, ep);
-			var receiveResult = await udpClient.ReceiveAsync();
-			byte[] answerData = receiveResult.Buffer;
-			string answerMsgJs = Encoding.UTF8.GetString(answerData);
-            Message answerMsg = Message.fromJson(answerMsgJs);
-            Console.WriteLine(answerMsg.ToString());
+		private static IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 16874);
+		private static UdpClient udpClient = new UdpClient(16678);
 
-        }
+		public static async Task ClientSendler()
+        {
+			while (true)
+			{
+				Task t = new Task(async () =>
+				{
+					Console.WriteLine("Enter nameFrom:");
+					string nameFrom = Console.ReadLine();
+					Console.WriteLine("Enter nameTo:");
+					string nameTo = Console.ReadLine();
+					Console.Write("Введите соощение:");
+					string text = Console.ReadLine();
+
+					Message msg = new Message(nameFrom, nameTo, text);
+					string responseMsgJs = msg.toJson();
+					byte[] responseData = Encoding.UTF8.GetBytes(responseMsgJs);
+
+					await udpClient.SendAsync(responseData, ep);
+					t = Task.CompletedTask;
+					
+				});
+				t.Start();
+				while(!t.IsCompleted)
+				{
+					
+				}
+			}
+			
+			
+		}
+
+		public static async Task ClientListner()
+		{
+			while (true)
+			{
+				var receiveResult = await udpClient.ReceiveAsync();
+				byte[] answerData = receiveResult.Buffer;
+				string answerMsgJs = Encoding.UTF8.GetString(answerData);
+				Message answerMsg = Message.fromJson(answerMsgJs);
+				Console.WriteLine(answerMsg.ToString());
+			}
+			
+		}
+
+		
         
 
 

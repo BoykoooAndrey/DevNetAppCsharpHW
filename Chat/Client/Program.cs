@@ -6,9 +6,10 @@
 
 		static async Task Main(string[] args)
 		{
-
-			await Client.SendMsg($"Client");
-
+			Task t = Client.ClientListner();
+			Task t2 = Client.ClientSendler();
+			t.Start();
+			t2.Start();
 
 
 		}
